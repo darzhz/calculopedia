@@ -40,6 +40,26 @@ import { compute as debtToIncome } from './debtToIncome';
 import { compute as squareFootage } from './squareFootage';
 import { compute as creatinineClearance } from './creatinineClearance';
 import { compute as braSize } from './braSize';
+import { compute as ratio } from './ratio';
+import { compute as average } from './average';
+import { compute as discount } from './discount';
+import { compute as hcf } from './hcf';
+import { compute as lcm } from './lcm';
+import { compute as moles } from './moles';
+import { compute as cutOffMarks } from './cutOffMarks';
+import { compute as dayOfWeek } from './dayOfWeek';
+import { compute as leapYear } from './leapYear';
+import { compute as proteinIntake } from './proteinIntake';
+import { compute as heartRateECG } from './heartRateECG';
+import { compute as carLoanInterest } from './carLoanInterest';
+import { compute as mileage } from './mileage';
+import { compute as bikeMileage } from './bikeMileage';
+import { compute as gdp } from './gdp';
+import { compute as waterTankCapacity } from './waterTankCapacity';
+import { compute as sgpaToPercentage } from './sgpaToPercentage';
+import { compute as dipoleMoment } from './dipoleMoment';
+import { compute as equivalentWeight } from './equivalentWeight';
+import { compute as edd } from './edd';
 import {
   percentOf,
   percentChange,
@@ -94,6 +114,26 @@ export const formulaRegistry: Record<string, FormulaFn> = {
   squareFootage,
   creatinineClearance,
   braSize,
+  ratio,
+  average,
+  discount,
+  hcf,
+  lcm,
+  moles,
+  cutOffMarks,
+  dayOfWeek,
+  leapYear,
+  proteinIntake,
+  heartRateECG,
+  carLoanInterest,
+  mileage,
+  bikeMileage,
+  gdp,
+  waterTankCapacity,
+  sgpaToPercentage,
+  dipoleMoment,
+  equivalentWeight,
+  edd,
   percentOf,
   percentChange,
   percentIncrease,

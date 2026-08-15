@@ -10,8 +10,18 @@ const config: CalculatorConfig = {
   answer:
     'The BMI calculator works out your Body Mass Index by dividing your weight in kilograms by your height in metres squared, and shows which weight category you fall into.',
   targetKeyword: 'bmi calculator',
-  keywords: ['bmi calculator', 'body mass index', 'bmi formula', 'healthy weight', 'bmi chart'],
+  keywords: ['bmi calculator', 'bmi calculator for female', 'body mass index', 'bmi formula', 'healthy weight', 'bmi chart'],
   inputs: [
+    {
+      type: 'select',
+      id: 'gender',
+      label: 'Gender',
+      options: [
+        { value: 'male', label: 'Male' },
+        { value: 'female', label: 'Female' },
+      ],
+      default: 'male',
+    },
     {
       type: 'number',
       id: 'weight',
@@ -45,6 +55,11 @@ const config: CalculatorConfig = {
     {
       id: 'category',
       label: 'Category',
+      format: 'text',
+    },
+    {
+      id: 'genderNote',
+      label: 'Note',
       format: 'text',
     },
     {
