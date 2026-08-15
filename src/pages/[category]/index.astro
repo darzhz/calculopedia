@@ -1,0 +1,77 @@
+---
+import BaseLayout from '@/components/layout/BaseLayout.astro';
+import Breadcrumbs from '@/components/layout/Breadcrumbs.astro';
+import AmbientShapes from '@/components/layout/AmbientShapes.astro';
+import { CATEGORIES, categoryBySlug } from '@/lib/site';
+import { loadEntries, pageUrl } from '@/lib/registry';
+import { breadcrumbSchema } from '@/lib/seo';
+
+export function getStaticPaths() {
+  return CATEGORIES.map((cat) => ({
+    params: { category: cat.slug },
+    props: { cat },
+  }));
+}
+
+const { category } = Astro.params;
+const cat = categoryBySlug(category);
+if (!cat) return Astro.redirect('/');
+
+const entries = loadEntries().filter((e) => e.config.category === category);
+const path = `/${category}/`;
+const breadcrumbs = [
+  { name: 'Home', url: '/' },
+  { name: cat.label, url: path },
+];
+---
+
+<BaseLayout title={`${cat.label} Calculators`} description={cat.description} canonicalPath={path}>
+  <Fragment slot="schema">
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={JSON.stringify(breadcrumbSchema(breadcrumbs))}
+    />
+  </Fragment>
+
+  <Breadcrumbs items={breadcrumbs} />
+
+  <section
+    class="relative overflow-hidden rounded-[32px] bg-md-surface-container px-5 py-10 sm:px-8 md:rounded-[48px] md:py-12"
+  >
+    <AmbientShapes variant="hero" />
+    <div class="relative">
+      <span
+        class="flex h-14 w-14 items-center justify-center rounded-[18px] bg-md-primary-container text-md-on-primary-container shadow-sm"
+      >
+        <span class="icon text-[30px]">{cat.icon}</span>
+      </span>
+      <h1
+        class="mt-5 text-2xl font-medium tracking-tight text-md-on-surface sm:text-3xl md:text-4xl"
+      >
+        {cat.label} Calculators
+      </h1>
+      <p class="mt-3 max-w-2xl text-base leading-relaxed text-md-on-surface-variant">
+        {cat.tagline}
+      </p>
+    </div>
+  </section>
+
+  <div class="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 md:mt-12 lg:grid-cols-3">
+    {
+      entries.map((entry) => (
+        <a href={pageUrl(entry)} class="card card-hover group p-6">
+          <span class="flex h-11 w-11 items-center justify-center rounded-full bg-md-secondary-container text-md-on-secondary-container transition-transform duration-300 ease-md group-hover:scale-110">
+            <span class="icon text-[24px]">{entry.config.icon ?? cat.icon}</span>
+          </span>
+          <span class="mt-4 block text-base font-medium text-md-on-surface">
+            {entry.config.title}
+          </span>
+          <span class="mt-1.5 block text-sm text-md-on-surface-variant">
+            {entry.config.shortDescription}
+          </span>
+        </a>
+      ))
+    }
+  </div>
+</BaseLayout>

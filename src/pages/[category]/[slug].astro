@@ -1,0 +1,222 @@
+---
+import { renderMarkdown } from '@/lib/markdown';
+import BaseLayout from '@/components/layout/BaseLayout.astro';
+import Breadcrumbs from '@/components/layout/Breadcrumbs.astro';
+import AdSlot from '@/components/layout/AdSlot.astro';
+import AmbientShapes from '@/components/layout/AmbientShapes.astro';
+import CalculatorWidget from '@/components/widgets/CalculatorWidget.svelte';
+import EmbedCode from '@/components/EmbedCode.svelte';
+import { loadEntries, relatedTo } from '@/lib/registry';
+import { categoryBySlug } from '@/lib/site';
+import { DEFAULT_LOCALE } from '@/lib/locale';
+import { formatOutputValue } from '@/lib/format';
+import { breadcrumbSchema, webApplicationSchema, faqSchema, absoluteUrl } from '@/lib/seo';
+
+export function getStaticPaths() {
+  return loadEntries().map((entry) => ({
+    params: { category: entry.config.category, slug: entry.config.slug },
+  }));
+}
+
+const { category, slug } = Astro.params;
+const entry = loadEntries().find((e) => e.config.category === category && e.config.slug === slug);
+if (!entry) return Astro.redirect('/');
+
+const { config, exampleInputs, exampleOutputs } = entry;
+const cat = categoryBySlug(config.category);
+const path = `/${config.category}/${config.slug}/`;
+const related = relatedTo(entry);
+const exampleScalars = config.outputs.filter((o) => o.format !== 'table');
+const breadcrumbs = [
+  { name: 'Home', url: '/' },
+  { name: cat?.label ?? config.category, url: `/${config.category}/` },
+  { name: config.title, url: path },
+];
+
+const schemaData: Record<string, unknown>[] = [
+  breadcrumbSchema(breadcrumbs),
+  webApplicationSchema(config, path),
+];
+if (config.faq?.length) schemaData.push(faqSchema(config.faq));
+---
+
+<BaseLayout
+  title={config.metaTitle ?? config.title}
+  description={config.metaDescription ?? config.shortDescription}
+  canonicalPath={path}
+  ogType="website"
+>
+  <Fragment slot="schema">
+    {
+      schemaData.map((s) => (
+        <script is:inline type="application/ld+json" set:html={JSON.stringify(s)} />
+      ))
+    }
+  </Fragment>
+
+  <Breadcrumbs items={breadcrumbs} />
+
+  <div class="space-y-10 md:space-y-12">
+    <section
+      class="relative overflow-hidden rounded-[32px] bg-md-surface-container px-5 py-10 sm:px-8 md:rounded-[48px] md:py-12"
+    >
+      <AmbientShapes variant="section" />
+      <div class="relative">
+        <span
+          class="flex h-12 w-12 items-center justify-center rounded-[16px] bg-md-primary-container text-md-on-primary-container shadow-sm"
+        >
+          <span class="icon text-[26px]">{config.icon ?? cat?.icon ?? 'calculate'}</span>
+        </span>
+        <h1
+          class="mt-5 text-2xl font-medium tracking-tight text-md-on-surface sm:text-3xl md:text-4xl"
+        >
+          {config.title}
+        </h1>
+        <p class="mt-3 max-w-3xl text-base leading-relaxed text-md-on-surface-variant md:text-lg">
+          {config.answer}
+        </p>
+        <p class="mt-3 text-xs text-md-on-surface-variant/70">Last updated {config.updated}</p>
+      </div>
+    </section>
+
+    <AdSlot id={`${config.slug}-leaderboard`} size="leaderboard" />
+
+    <section aria-label="Calculator">
+      <CalculatorWidget config={config} client:load />
+      <details class="mt-4 rounded-2xl text-sm text-md-on-surface-variant">
+        <summary
+          class="cursor-pointer select-none transition-colors duration-200 hover:text-md-primary"
+        >
+          Embed on your site
+        </summary>
+        <EmbedCode embedUrl={absoluteUrl(`/embed/${config.slug}/`)} />
+      </details>
+    </section>
+
+    <AdSlot id={`${config.slug}-mid-content`} size="rectangle" />
+
+    <section class="card p-6 sm:p-7" aria-label="Worked example">
+      <h2 class="flex items-center gap-2 text-xl font-medium tracking-tight text-md-on-surface">
+        <span class="icon text-[22px] text-md-primary">quiz</span>
+        Example
+      </h2>
+      <p class="mt-2 text-sm text-md-on-surface-variant">
+        How this calculator works, with real numbers (no JavaScript needed):
+      </p>
+      <div class="mt-6 grid gap-6 md:grid-cols-2">
+        <div>
+          <p class="mb-3 text-sm font-medium text-md-on-surface">Inputs</p>
+          <dl class="space-y-2 text-sm">
+            {
+              config.inputs.map((f) => (
+                <div class="flex justify-between gap-4">
+                  <dt class="text-md-on-surface-variant">{f.label}</dt>
+                  <dd class="font-medium text-md-on-surface">
+                    {String(exampleInputs[f.id] ?? '')}
+                  </dd>
+                </div>
+              ))
+            }
+          </dl>
+        </div>
+        <div>
+          <p class="mb-3 text-sm font-medium text-md-on-surface">Results</p>
+          <dl class="space-y-2 text-sm">
+            {
+              exampleScalars.map((o) => {
+                const value = exampleOutputs[o.id];
+                const shown = typeof value === 'number' || typeof value === 'string';
+                return (
+                  <div class="flex justify-between gap-4">
+                    <dt class="text-md-on-surface-variant">{o.label}</dt>
+                    <dd class="font-medium text-md-primary tabular-nums">
+                      {shown ? formatOutputValue(o, value, DEFAULT_LOCALE) : ''}
+                    </dd>
+                  </div>
+                );
+              })
+            }
+          </dl>
+        </div>
+      </div>
+    </section>
+
+    <section aria-label="Formula">
+      <h2 class="flex items-center gap-2 text-xl font-medium tracking-tight text-md-on-surface">
+        <span class="icon text-[22px] text-md-primary">functions</span>
+        The formula
+      </h2>
+      <div
+        class="mt-4 rounded-2xl bg-md-inverse-surface p-5 font-mono text-sm leading-relaxed text-md-inverse-on-surface"
+      >
+        {config.formulaDisplay}
+      </div>
+    </section>
+
+    <section
+      class="prose-calc max-w-none"
+      aria-label="Explanation"
+      set:html={renderMarkdown(config.explanation)}
+    />
+
+    {
+      config.faq?.length ? (
+        <section aria-label="Frequently asked questions">
+          <h2 class="flex items-center gap-2 text-xl font-medium tracking-tight text-md-on-surface">
+            <span class="icon text-[22px] text-md-primary">help</span>
+            Frequently asked questions
+          </h2>
+          <div class="mt-5 space-y-3">
+            {config.faq.map((f) => (
+              <details class="card card-hover p-5 transition-colors sm:p-6" open>
+                <summary class="flex cursor-pointer items-center gap-3 font-medium text-md-on-surface">
+                  <span class="icon text-[20px] text-md-primary">question_mark</span>
+                  {f.question}
+                </summary>
+                <p class="mt-3 pl-9 text-sm leading-relaxed text-md-on-surface-variant">
+                  {f.answer}
+                </p>
+              </details>
+            ))}
+          </div>
+        </section>
+      ) : null
+    }
+
+    {
+      related.length ? (
+        <section aria-label="Related calculators">
+          <h2 class="flex items-center gap-2 text-xl font-medium tracking-tight text-md-on-surface">
+            <span class="icon text-[22px] text-md-primary">view_quilt</span>
+            You might also need
+          </h2>
+          <div class="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {related.map((r) => (
+              <a href={`/${r.config.category}/${r.config.slug}/`} class="card card-hover group p-5">
+                <span class="flex items-center gap-3 font-medium text-md-on-surface">
+                  <span class="flex h-9 w-9 items-center justify-center rounded-full bg-md-secondary-container text-md-on-secondary-container transition-transform duration-300 ease-md group-hover:scale-110">
+                    <span class="icon text-[18px]">{r.config.icon ?? 'calculate'}</span>
+                  </span>
+                  {r.config.title}
+                </span>
+                <span class="mt-2 block text-sm text-md-on-surface-variant">
+                  {r.config.shortDescription}
+                </span>
+              </a>
+            ))}
+          </div>
+        </section>
+      ) : null
+    }
+
+    <nav class="pt-1 text-sm">
+      <a
+        href={`/${config.category}/`}
+        class="inline-flex items-center gap-1 font-medium text-md-primary transition-colors duration-200 hover:text-md-primary/80"
+      >
+        <span class="icon text-[18px]">arrow_back</span>
+        More {cat?.label ?? config.category} calculators
+      </a>
+    </nav>
+  </div>
+</BaseLayout>

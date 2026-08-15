@@ -1,0 +1,33 @@
+---
+/**
+ * Decorative Material You "organic blur shapes" layer.
+ * Renders soft, heavily-blurred color blobs for atmospheric depth.
+ * Purely decorative — aria-hidden, pointer-events-none.
+ *
+ * Wrap in a `relative overflow-hidden` parent. Position variants:
+ *  - "hero":    2 large blobs top-left / bottom-right
+ *  - "section": smaller pair used mid-page
+ */
+interface Props {
+  variant?: 'hero' | 'section';
+}
+
+const { variant = 'hero' } = Astro.props;
+---
+
+<div class="pointer-events-none absolute inset-0 -z-10 overflow-hidden" aria-hidden="true">
+  {
+    variant === 'hero' ? (
+      <>
+        <div class="absolute -left-24 -top-24 h-72 w-72 rounded-[100px] bg-md-primary/20 blur-3xl md:h-96 md:w-96 md:-translate-x-1/4 md:-translate-y-1/3" />
+        <div class="absolute -bottom-16 -right-16 h-64 w-64 rounded-full bg-md-tertiary/15 blur-3xl md:h-80 md:w-80 md:translate-x-1/4 md:translate-y-1/3" />
+        <div class="absolute left-1/2 top-1/3 h-40 w-40 rounded-full bg-md-secondary/15 blur-3xl" />
+      </>
+    ) : (
+      <>
+        <div class="absolute -left-16 -top-16 h-56 w-56 rounded-[80px] bg-md-secondary/15 blur-3xl" />
+        <div class="absolute -bottom-20 -right-10 h-56 w-56 rounded-full bg-md-primary/15 blur-3xl" />
+      </>
+    )
+  }
+</div>

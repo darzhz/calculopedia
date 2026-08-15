@@ -1,0 +1,21 @@
+---
+import { AD_SLOT_SIZES } from '@/lib/site';
+
+interface Props {
+  id: string;
+  size?: keyof typeof AD_SLOT_SIZES;
+}
+
+const { id, size = 'leaderboard' } = Astro.props;
+const minHeight = AD_SLOT_SIZES[size] ?? AD_SLOT_SIZES.leaderboard;
+---
+
+<div
+  class:list={['ad-slot', minHeight]}
+  id={`ad-${id}`}
+  data-ad-slot={id}
+  aria-label="Advertisement placeholder"
+  data-consent-required
+>
+  <!-- Ad network injects here after consent. Reserved height prevents CLS. -->
+</div>

@@ -1,0 +1,82 @@
+---
+import { SITE_NAME, CATEGORIES } from '@/lib/site';
+import { loadEntries } from '@/lib/registry';
+
+const popular = loadEntries()
+  .slice(0, 8)
+  .map((e) => ({ url: `/${e.config.category}/${e.config.slug}/`, label: e.config.title }));
+---
+
+<footer class="mt-8 border-t border-md-outline-variant bg-md-surface-container">
+  <div class="mx-auto grid w-full max-w-6xl gap-8 px-4 py-14 sm:px-6 md:grid-cols-4 md:gap-10">
+    <div class="space-y-3 md:col-span-1">
+      <a href="/" class="flex items-center gap-2 font-medium text-md-on-surface">
+        <span
+          class="flex h-9 w-9 items-center justify-center rounded-2xl bg-md-primary-container text-md-on-primary-container"
+        >
+          <span class="icon text-[22px]">calculate</span>
+        </span>
+        {SITE_NAME}
+      </a>
+      <p class="text-sm leading-relaxed text-md-on-surface-variant">
+        Free online calculators for finance, health, dates and everyday math.
+      </p>
+    </div>
+    <div class="space-y-2.5">
+      <p class="text-sm font-medium text-md-on-surface">Categories</p>
+      {
+        CATEGORIES.map((cat) => (
+          <a
+            href={`/${cat.slug}/`}
+            class="flex items-center gap-2 text-sm text-md-on-surface-variant transition-colors duration-200 hover:text-md-primary"
+          >
+            <span class="icon text-[18px]">{cat.icon}</span>
+            {cat.label}
+          </a>
+        ))
+      }
+    </div>
+    <div class="space-y-2.5">
+      <p class="text-sm font-medium text-md-on-surface">Popular calculators</p>
+      {
+        popular.map((p) => (
+          <a
+            href={p.url}
+            class="block text-sm text-md-on-surface-variant transition-colors duration-200 hover:text-md-primary"
+          >
+            {p.label}
+          </a>
+        ))
+      }
+    </div>
+    <div class="space-y-2.5">
+      <p class="text-sm font-medium text-md-on-surface">Site</p>
+      <a
+        href="/calculators/"
+        class="block text-sm text-md-on-surface-variant transition-colors duration-200 hover:text-md-primary"
+        >All calculators</a
+      >
+      <a
+        href="/glossary/"
+        class="block text-sm text-md-on-surface-variant transition-colors duration-200 hover:text-md-primary"
+        >Glossary</a
+      >
+      <a
+        href="/blog/"
+        class="block text-sm text-md-on-surface-variant transition-colors duration-200 hover:text-md-primary"
+        >Blog</a
+      >
+      <a
+        href="/llms.txt"
+        class="block text-sm text-md-on-surface-variant transition-colors duration-200 hover:text-md-primary"
+        >llms.txt</a
+      >
+    </div>
+  </div>
+  <div
+    class="border-t border-md-outline-variant px-4 py-5 text-center text-xs text-md-on-surface-variant"
+  >
+    © {new Date().getFullYear()}
+    {SITE_NAME}. Content is for general information only, not financial advice.
+  </div>
+</footer>

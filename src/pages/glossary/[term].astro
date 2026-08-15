@@ -1,0 +1,69 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '@/components/layout/BaseLayout.astro';
+import Breadcrumbs from '@/components/layout/Breadcrumbs.astro';
+import { breadcrumbSchema, articleSchema } from '@/lib/seo';
+
+export async function getStaticPaths() {
+  const terms = await getCollection('glossary');
+  return terms.map((term) => ({ params: { term: term.id } }));
+}
+
+const { term } = Astro.params;
+const entry = (await getCollection('glossary')).find((t) => t.id === term);
+if (!entry) return Astro.redirect('/glossary/');
+
+const { Content } = await render(entry);
+const path = `/glossary/${entry.id}/`;
+const breadcrumbs = [
+  { name: 'Home', url: '/' },
+  { name: 'Glossary', url: '/glossary/' },
+  { name: entry.data.term, url: path },
+];
+---
+
+<BaseLayout
+  title={`${entry.data.term} — Definition`}
+  description={entry.data.description}
+  canonicalPath={path}
+>
+  <Fragment slot="schema">
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={JSON.stringify(breadcrumbSchema(breadcrumbs))}
+    />
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={JSON.stringify(
+        articleSchema(entry.data.term, entry.data.description, path, '2026-01-01', '2026-01-01'),
+      )}
+    />
+  </Fragment>
+
+  <Breadcrumbs items={breadcrumbs} />
+
+  <article class="mx-auto max-w-3xl space-y-8">
+    <header>
+      <span
+        class="flex h-12 w-12 items-center justify-center rounded-full bg-md-primary-container font-medium text-md-on-primary-container"
+      >
+        {entry.data.term.slice(0, 2).toUpperCase()}
+      </span>
+      <h1 class="mt-5 text-2xl font-medium tracking-tight text-md-on-surface sm:text-3xl">
+        {entry.data.term}
+      </h1>
+      {
+        entry.data.category && (
+          <span class="mt-4 inline-block rounded-full bg-md-secondary-container px-3 py-1 text-xs font-medium text-md-on-secondary-container">
+            {entry.data.category}
+          </span>
+        )
+      }
+    </header>
+    <div class="prose-calc">
+      <Content />
+    </div>
+  </article>
+</BaseLayout>

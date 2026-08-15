@@ -1,0 +1,48 @@
+---
+import '@/styles/global.css';
+import type { CalculatorEntry } from '@/lib/registry';
+import CalculatorWidget from '@/components/widgets/CalculatorWidget.svelte';
+import { loadEntries } from '@/lib/registry';
+import { SITE_NAME } from '@/lib/site';
+import { absoluteUrl } from '@/lib/seo';
+
+export function getStaticPaths() {
+  return loadEntries().map((entry) => ({
+    params: { slug: entry.config.slug },
+    props: { entry },
+  }));
+}
+
+const { entry }: { entry: CalculatorEntry } = Astro.props;
+const originalUrl = `/${entry.config.category}/${entry.config.slug}/`;
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <link rel="canonical" href={absoluteUrl(originalUrl)} />
+    <meta name="theme-color" content="#6750A4" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&family=Roboto:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <title>{entry.config.title}</title>
+  </head>
+  <body class="bg-md-surface text-md-on-surface">
+    <div class="mx-auto w-full max-w-xl p-4 sm:p-6">
+      <CalculatorWidget config={entry.config} client:load />
+      <div class="mt-4 text-center text-xs text-md-on-surface-variant">
+        <a
+          href={absoluteUrl(originalUrl)}
+          class="transition-colors duration-200 hover:text-md-primary"
+        >
+          Free {entry.config.title} and more at {SITE_NAME}
+        </a>
+      </div>
+    </div>
+  </body>
+</html>

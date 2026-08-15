@@ -1,0 +1,50 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '@/components/layout/BaseLayout.astro';
+import Breadcrumbs from '@/components/layout/Breadcrumbs.astro';
+import AmbientShapes from '@/components/layout/AmbientShapes.astro';
+
+const terms = (await getCollection('glossary')).sort((a, b) =>
+  a.data.term.localeCompare(b.data.term),
+);
+const breadcrumbs = [
+  { name: 'Home', url: '/' },
+  { name: 'Glossary', url: '/glossary/' },
+];
+---
+
+<BaseLayout
+  title="Glossary — Finance & Health Terms Explained"
+  description="Plain-English definitions of finance and health terms used across our calculators."
+  canonicalPath="/glossary/"
+>
+  <Breadcrumbs items={breadcrumbs} />
+
+  <section class="relative overflow-hidden">
+    <AmbientShapes variant="hero" />
+    <div class="relative">
+      <h1 class="text-2xl font-medium tracking-tight text-md-on-surface sm:text-3xl md:text-4xl">
+        Glossary
+      </h1>
+      <p class="mt-3 text-md-on-surface-variant">
+        Plain-English definitions of terms used across our calculators.
+      </p>
+    </div>
+  </section>
+
+  <div class="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 md:mt-12 lg:grid-cols-3">
+    {
+      terms.map((term) => (
+        <a href={`/glossary/${term.id}/`} class="card card-hover group p-6">
+          <span class="flex h-11 w-11 items-center justify-center rounded-full bg-md-primary-container font-medium text-md-on-primary-container transition-transform duration-300 ease-md group-hover:scale-110">
+            {term.data.term.slice(0, 2).toUpperCase()}
+          </span>
+          <span class="mt-4 block font-medium text-md-on-surface">{term.data.term}</span>
+          <span class="mt-1.5 block text-sm text-md-on-surface-variant">
+            {term.data.description}
+          </span>
+        </a>
+      ))
+    }
+  </div>
+</BaseLayout>

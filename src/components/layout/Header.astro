@@ -1,0 +1,65 @@
+---
+import SearchBox from './SearchBox.svelte';
+import { SITE_NAME, CATEGORIES } from '@/lib/site';
+---
+
+<header class="sticky top-0 z-40 border-b border-md-outline-variant bg-md-surface/90 backdrop-blur">
+  <div class="mx-auto w-full max-w-6xl px-4 sm:px-6">
+    <div class="flex h-16 items-center gap-3 md:h-20">
+      <a
+        href="/"
+        class="flex shrink-0 items-center gap-2.5 font-medium tracking-tight text-md-on-surface"
+        aria-label={`${SITE_NAME} — home`}
+      >
+        <span
+          class="flex h-9 w-9 items-center justify-center rounded-2xl bg-md-primary-container text-md-on-primary-container shadow-sm"
+        >
+          <span class="icon text-[22px]">calculate</span>
+        </span>
+        <span class="text-base md:text-lg">{SITE_NAME}</span>
+      </a>
+
+      <nav class="hidden flex-1 items-center justify-center gap-1 md:flex" aria-label="Main">
+        {
+          CATEGORIES.map((cat) => (
+            <a
+              href={`/${cat.slug}/`}
+              class="rounded-full px-4 py-2 text-sm font-medium text-md-on-surface-variant transition-all duration-300 ease-md hover:bg-md-secondary-container/70 hover:text-md-on-secondary-container"
+            >
+              {cat.label}
+            </a>
+          ))
+        }
+        <a
+          href="/calculators/"
+          class="rounded-full px-4 py-2 text-sm font-medium text-md-on-surface-variant transition-all duration-300 ease-md hover:bg-md-secondary-container/70 hover:text-md-on-secondary-container"
+        >
+          All calculators
+        </a>
+      </nav>
+
+      <div class="ml-auto w-full max-w-xs flex-1 md:ml-0 md:max-w-64 md:flex-none">
+        <SearchBox />
+      </div>
+    </div>
+
+    <nav
+      class="-mx-1 flex gap-1.5 overflow-x-auto px-1 pb-4 pt-0.5 md:hidden"
+      aria-label="Main"
+      style="scrollbar-width:none"
+    >
+      {
+        CATEGORIES.map((cat) => (
+          <a href={`/${cat.slug}/`} class="chip shrink-0">
+            <span class="icon text-[18px]">{cat.icon}</span>
+            {cat.label}
+          </a>
+        ))
+      }
+      <a href="/calculators/" class="chip shrink-0">
+        <span class="icon text-[18px]">apps</span>
+        All calculators
+      </a>
+    </nav>
+  </div>
+</header>

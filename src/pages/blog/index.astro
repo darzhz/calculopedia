@@ -1,0 +1,64 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '@/components/layout/BaseLayout.astro';
+import Breadcrumbs from '@/components/layout/Breadcrumbs.astro';
+import AmbientShapes from '@/components/layout/AmbientShapes.astro';
+
+const posts = (await getCollection('blog')).sort((a, b) =>
+  b.data.datePublished.localeCompare(a.data.datePublished),
+);
+const breadcrumbs = [
+  { name: 'Home', url: '/' },
+  { name: 'Blog', url: '/blog/' },
+];
+---
+
+<BaseLayout
+  title="Blog — Calculator Guides & Formula Explainers"
+  description="Explanations of formulas, worked examples and use-cases behind our calculators."
+  canonicalPath="/blog/"
+>
+  <Breadcrumbs items={breadcrumbs} />
+
+  <section class="relative overflow-hidden">
+    <AmbientShapes variant="hero" />
+    <div class="relative">
+      <h1 class="text-2xl font-medium tracking-tight text-md-on-surface sm:text-3xl md:text-4xl">
+        Blog
+      </h1>
+      <p class="mt-3 text-md-on-surface-variant">
+        Explainers and guides that show the math behind our calculators.
+      </p>
+    </div>
+  </section>
+
+  <div class="mt-10 grid grid-cols-1 gap-5 md:mt-12 md:grid-cols-2 md:gap-6">
+    {
+      posts.map((post) => (
+        <article class="card card-hover group p-6 sm:p-7">
+          <span class="inline-flex items-center gap-1.5 rounded-full bg-md-secondary-container px-3 py-1 text-xs font-medium text-md-on-secondary-container">
+            <span class="icon text-[16px]">calendar_month</span>
+            {post.data.datePublished}
+          </span>
+          <h2 class="mt-4 text-lg font-medium text-md-on-surface">
+            <a
+              href={`/blog/${post.id}/`}
+              class="transition-colors duration-200 hover:text-md-primary"
+            >
+              {post.data.title}
+            </a>
+          </h2>
+          <p class="mt-2 text-sm leading-relaxed text-md-on-surface-variant">
+            {post.data.description}
+          </p>
+          <span class="mt-5 inline-flex items-center gap-1 text-sm font-medium text-md-primary">
+            Read article
+            <span class="icon text-[18px] transition-transform duration-300 ease-md group-hover:translate-x-1">
+              arrow_forward
+            </span>
+          </span>
+        </article>
+      ))
+    }
+  </div>
+</BaseLayout>
