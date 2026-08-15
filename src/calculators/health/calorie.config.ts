@@ -159,7 +159,12 @@ Moderate → TDEE = 1,699 × 1.55 ≈ **2,633 kcal**. Eating that many calories 
         'BMR is the calories you burn at complete rest. TDEE adds your physical activity on top, so it is the number of calories needed to maintain your current weight.',
     },
   ],
-  relatedCalculators: ['bmi-calculator', 'ideal-weight-calculator'],
+  relatedCalculators: [
+    'bmi-calculator',
+    'ideal-weight-calculator',
+    'maintenance-calories-calculator',
+    'bmr-calculator',
+  ],
   updated: '2026-08-14',
 };
 

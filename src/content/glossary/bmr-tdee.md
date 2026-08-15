@@ -11,4 +11,4 @@ To lose weight, eat roughly 500 calories below your TDEE; to gain, eat 500 above
     Men: 10 × weight(kg) + 6.25 × height(cm) − 5 × age + 5
     Women: 10 × weight(kg) + 6.25 × height(cm) − 5 × age − 161
 
-Calculate your numbers with the [Calorie Calculator](/health/calorie-calculator/).
+Calculate your BMR with the [BMR Calculator](/health/bmr-calculator/), your daily needs with the [Calorie Calculator](/health/calorie-calculator/), and your exact maintenance target with the [Maintenance Calories Calculator](/health/maintenance-calories-calculator/).

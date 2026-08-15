@@ -76,6 +76,15 @@ export const ToggleFieldSchema = z.object({
   showWhen: z.object({ field: z.string(), value: z.string() }).optional(),
 });
 
+export const TextFieldSchema = z.object({
+  type: z.literal('text'),
+  ...sharedField,
+  default: z.string().optional(),
+  placeholder: z.string().optional(),
+  maxLength: z.number().int().positive().optional(),
+  showWhen: z.object({ field: z.string(), value: z.string() }).optional(),
+});
+
 export const InputFieldSchema = z.discriminatedUnion('type', [
   NumberFieldSchema,
   RangeFieldSchema,
@@ -83,11 +92,13 @@ export const InputFieldSchema = z.discriminatedUnion('type', [
   DateFieldSchema,
   TimeFieldSchema,
   ToggleFieldSchema,
+  TextFieldSchema,
 ]);
 
 export type InputField = z.infer<typeof InputFieldSchema>;
 export type NumberField = z.infer<typeof NumberFieldSchema>;
 export type SelectField = z.infer<typeof SelectFieldSchema>;
+export type TextField = z.infer<typeof TextFieldSchema>;
 
 export const OutputSchema = z.object({
   id: z.string().min(1),

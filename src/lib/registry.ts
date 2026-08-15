@@ -38,6 +38,8 @@ function defaultForField(field: InputField): number | string | boolean {
       return field.default ?? '';
     case 'toggle':
       return field.default ?? false;
+    case 'text':
+      return field.default ?? '';
     default:
       return field.default ?? 0;
   }

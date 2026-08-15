@@ -10,6 +10,216 @@ function num(v: unknown): number {
   return typeof v === 'number' ? v : Number(v);
 }
 
+describe('monthlyIncome', () => {
+  it('converts 1L monthly to 12L annual', () => {
+    const out = run('monthlyIncome', { amount: 100000, frequency: 'monthly', hoursPerWeek: 40 });
+    expect(num(out.monthlyIncome)).toBeCloseTo(100000, 0);
+    expect(num(out.annualIncome)).toBeCloseTo(1200000, 0);
+    expect(num(out.weeklyIncome)).toBeCloseTo(23077, 0);
+  });
+
+  it('converts hourly rate to monthly', () => {
+    const out = run('monthlyIncome', { amount: 800, frequency: 'hourly', hoursPerWeek: 40 });
+    expect(num(out.monthlyIncome)).toBeCloseTo(138667, 0);
+  });
+});
+
+describe('interestPerMonth', () => {
+  it('12% annual → 1% monthly, ₹500/month on 50k', () => {
+    const out = run('interestPerMonth', { annualRate: 12, principal: 50000, months: 12 });
+    expect(num(out.monthlyRate)).toBe(1);
+    expect(num(out.monthlyInterest)).toBeCloseTo(500, 0);
+    expect(num(out.totalInterest)).toBeCloseTo(6000, 0);
+  });
+});
+
+describe('gpa', () => {
+  it('computes weighted GPA on 4.0 scale', () => {
+    const out = run('gpa', {
+      scale: '4',
+      subject1Grade: 'A',
+      subject1Credits: 3,
+      subject2Grade: 'A',
+      subject2Credits: 3,
+      subject3Grade: 'A',
+      subject3Credits: 3,
+      subject4Grade: 'B',
+      subject4Credits: 3,
+      subject5Grade: 'F',
+      subject5Credits: 0,
+    });
+    expect(num(out.gpa)).toBeCloseTo(3.75, 2);
+    expect(num(out.totalCredits)).toBe(12);
+    expect(Array.isArray(out.courseBreakdown)).toBe(true);
+  });
+});
+
+describe('shipping', () => {
+  it('estimates UPS cost for 2kg regional box', () => {
+    const out = run('shipping', { carrier: 'ups', weightKg: 2, zone: 'regional', packageType: 'box' });
+    expect(num(out.baseRate)).toBe(9);
+    expect(num(out.weightCharge)).toBeCloseTo(2.4, 1);
+    expect(num(out.estimatedTotal)).toBeCloseTo(9 + 2.4 + 1.5 + 0.5, 0);
+  });
+});
+
+describe('zscore', () => {
+  it('computes z = 1.5 and percentile ~93.3 for 85 vs mean 70 sd 10', () => {
+    const out = run('zscore', { value: 85, mean: 70, standardDeviation: 10 });
+    expect(num(out.zScore)).toBeCloseTo(1.5, 2);
+    expect(num(out.percentile)).toBeGreaterThan(93);
+    expect(num(out.percentile)).toBeLessThan(94);
+    expect(String(out.interpretation)).toContain('above the mean');
+  });
+
+  it('gives 50th percentile at the mean', () => {
+    const out = run('zscore', { value: 70, mean: 70, standardDeviation: 10 });
+    expect(num(out.zScore)).toBeCloseTo(0, 2);
+    expect(num(out.percentile)).toBeCloseTo(50, 0);
+  });
+});
+
+describe('hoursWorked', () => {
+  it('09:00–17:00 minus 30 min break = 7.5 hours', () => {
+    const out = run('hoursWorked', {
+      startTime: '09:00',
+      endTime: '17:00',
+      nextDay: false,
+      breakMinutes: 30,
+    });
+    expect(num(out.netHours)).toBeCloseTo(7.5, 1);
+    expect(num(out.netMinutes)).toBe(450);
+    expect(String(out.durationText)).toContain('7 hour');
+  });
+
+  it('handles overnight shifts', () => {
+    const out = run('hoursWorked', {
+      startTime: '23:00',
+      endTime: '07:00',
+      nextDay: true,
+      breakMinutes: 0,
+    });
+    expect(num(out.netHours)).toBeCloseTo(8, 1);
+  });
+});
+
+describe('cubicFeet', () => {
+  it('computes 2×2×3 ft = 12 cu ft', () => {
+    const out = run('cubicFeet', { unit: 'ft', length: 2, width: 2, height: 3 });
+    expect(num(out.cubicFeet)).toBeCloseTo(12, 2);
+    expect(num(out.liters)).toBeGreaterThan(330);
+    expect(num(out.liters)).toBeLessThan(340);
+  });
+
+  it('converts cm to cubic feet', () => {
+    const out = run('cubicFeet', { unit: 'cm', length: 100, width: 50, height: 40 });
+    expect(num(out.cubicFeet)).toBeGreaterThan(7);
+    expect(num(out.cubicFeet)).toBeLessThan(7.1);
+  });
+});
+
+describe('hourlyRate', () => {
+  it('12L annual at 40h × 52w ≈ ₹577/hour', () => {
+    const out = run('hourlyRate', { annualSalary: 1200000, hoursPerWeek: 40, weeksPerYear: 52 });
+    expect(num(out.hourlyRate)).toBeCloseTo(576.9, 0);
+    expect(num(out.monthly)).toBeCloseTo(100000, 0);
+  });
+});
+
+describe('bmr', () => {
+  it('Mifflin-St Jeor for a 30y male 175cm 75kg', () => {
+    const out = run('bmr', { age: 30, gender: 'male', heightCm: 175, weight: 75, bodyFatPercent: 20 });
+    expect(num(out.bmrMifflin)).toBeCloseTo(1698.8, 1);
+    expect(num(out.bmrKatch)).toBeGreaterThan(1600);
+  });
+});
+
+describe('debtToIncome', () => {
+  it('12L income, ₹30k monthly debts → 30% DTI', () => {
+    const out = run('debtToIncome', { annualIncome: 1200000, monthlyDebts: 30000 });
+    expect(num(out.grossMonthly)).toBeCloseTo(100000, 0);
+    expect(num(out.dti)).toBeCloseTo(30, 1);
+    expect(String(out.category)).toContain('Good');
+  });
+});
+
+describe('squareFootage', () => {
+  it('10×12 ft room = 120 sq ft', () => {
+    const out = run('squareFootage', { unit: 'ft', length: 10, width: 12 });
+    expect(num(out.squareFeet)).toBeCloseTo(120, 2);
+  });
+});
+
+describe('creatinineClearance', () => {
+  it('Cockcroft-Gault male 40y 70kg sCr 1.0', () => {
+    const out = run('creatinineClearance', { age: 40, weight: 70, gender: 'male', serumCreatinine: 1 });
+    expect(num(out.crCl)).toBeCloseTo(97.2, 1);
+    expect(String(out.category)).toContain('Normal');
+  });
+
+  it('female multiplier 0.85 lowers clearance', () => {
+    const out = run('creatinineClearance', { age: 40, weight: 70, gender: 'female', serumCreatinine: 1 });
+    expect(num(out.crCl)).toBeCloseTo(82.6, 1);
+  });
+});
+
+describe('braSize', () => {
+  it('underbust 31, bust 36, modern → 32D', () => {
+    const out = run('braSize', { unit: 'in', underbust: 31, bust: 36, method: 'modern' });
+    expect(num(out.bandSize)).toBe(32);
+    expect(String(out.cupLetter)).toBe('D');
+    expect(String(out.braSize)).toBe('32D');
+  });
+
+  it('cm input converts and traditional method adds 4', () => {
+    const out = run('braSize', { unit: 'cm', underbust: 80, bust: 95, method: 'traditional' });
+    expect(num(out.bandSize)).toBe(36);
+  });
+});
+
+describe('carPayment', () => {
+  it('computes monthly payment from price minus down payment', () => {
+    const out = run('carPayment', {
+      carPrice: 800000,
+      downPayment: 150000,
+      annualRate: 9.5,
+      years: 5,
+    });
+    expect(num(out.loanAmount)).toBeCloseTo(650000, 0);
+    expect(num(out.monthlyPayment)).toBeGreaterThan(13500);
+    expect(num(out.monthlyPayment)).toBeLessThan(13800);
+    expect(num(out.totalCost)).toBeCloseTo(800000 + num(out.totalInterest), 0);
+    const rows = out.amortization as Record<string, unknown>[];
+    expect(rows.length).toBe(60);
+    expect(rows[59].balance).toBe(0);
+  });
+});
+
+describe('takeHomePay', () => {
+  it('12L gross in new regime pays zero tax (rebate)', () => {
+    const out = run('takeHomePay', { annualIncome: 1200000, regime: 'new', deductions: 0 });
+    expect(num(out.taxableIncome)).toBe(1125000);
+    expect(num(out.taxTotal)).toBe(0);
+    expect(num(out.netMonthly)).toBeCloseTo(100000, 0);
+  });
+
+  it('15L gross in new regime pays tax + cess', () => {
+    const out = run('takeHomePay', { annualIncome: 1500000, regime: 'new', deductions: 0 });
+    expect(num(out.taxTotal)).toBeCloseTo(97500, 0);
+    expect(num(out.netAnnual)).toBeCloseTo(1402500, 0);
+  });
+
+  it('old regime allows deductions', () => {
+    const out = run('takeHomePay', {
+      annualIncome: 1500000,
+      regime: 'old',
+      deductions: 150000,
+    });
+    expect(num(out.taxableIncome)).toBe(1300000);
+    expect(num(out.taxTotal)).toBeCloseTo(210600, 0);
+  });
+});
+
 describe('emi', () => {
   it('computes EMI for a 50L home loan at 8.5% for 20 years', () => {
     const out = run('emi', {
@@ -175,6 +385,61 @@ describe('gold', () => {
   });
 });
 
+describe('bodyFat', () => {
+  it('estimates Navy-method body fat for a male', () => {
+    const out = run('bodyFat', {
+      gender: 'male',
+      weight: 75,
+      heightCm: 175,
+      neckCm: 38,
+      waistCm: 85,
+      hipCm: 0,
+    });
+    expect(num(out.bodyFatPercent)).toBeGreaterThan(9);
+    expect(num(out.bodyFatPercent)).toBeLessThan(12);
+    expect(String(out.category)).toBe('Athletes');
+    expect(num(out.fatMass)).toBeGreaterThan(0);
+    expect(num(out.leanMass)).toBeCloseTo(75 - num(out.fatMass), 1);
+  });
+});
+
+describe('mortgage', () => {
+  it('computes P&I plus tax and insurance, no PMI at 20% down', () => {
+    const out = run('mortgage', {
+      homePrice: 350000,
+      downPayment: 70000,
+      annualRate: 6.5,
+      years: 30,
+      annualTax: 3000,
+      annualInsurance: 1200,
+      includePmi: true,
+      pmiRate: 1,
+    });
+    expect(num(out.loanAmount)).toBeCloseTo(280000, 0);
+    expect(num(out.monthlyPI)).toBeGreaterThan(1750);
+    expect(num(out.monthlyPI)).toBeLessThan(1800);
+    expect(num(out.monthlyPmi)).toBe(0);
+    expect(num(out.totalMonthly)).toBeCloseTo(num(out.monthlyPI) + 250 + 100, 0);
+    const rows = out.amortization as Record<string, unknown>[];
+    expect(rows.length).toBe(360);
+    expect(rows[359].balance).toBe(0);
+  });
+
+  it('applies PMI when down payment is under 20%', () => {
+    const out = run('mortgage', {
+      homePrice: 350000,
+      downPayment: 30000,
+      annualRate: 6.5,
+      years: 30,
+      annualTax: 0,
+      annualInsurance: 0,
+      includePmi: true,
+      pmiRate: 1,
+    });
+    expect(num(out.monthlyPmi)).toBeGreaterThan(250);
+  });
+});
+
 describe('bmi', () => {
   it('classifies 70kg/175cm as normal', () => {
     const out = run('bmi', { weight: 70, heightCm: 175 });
@@ -199,10 +464,83 @@ describe('calorie', () => {
   });
 });
 
+describe('maintenanceCalories', () => {
+  it('computes maintenance from Mifflin-St Jeor BMR', () => {
+    const out = run('maintenanceCalories', {
+      age: 30,
+      gender: 'male',
+      heightCm: 175,
+      weight: 75,
+      activity: 'moderate',
+      method: 'mifflin',
+      bodyFatPercent: 20,
+    });
+    expect(num(out.bmr)).toBeCloseTo(1698.8, 1);
+    expect(num(out.maintenanceCalories)).toBeCloseTo(2633.1, 1);
+    expect(num(out.cutCalories)).toBeCloseTo(2238.1, 0);
+    expect(num(out.bulkCalories)).toBeCloseTo(3028.1, 0);
+  });
+});
+
 describe('idealWeight', () => {
   it('uses Devine for a 175cm male', () => {
     const out = run('idealWeight', { heightCm: 175, gender: 'male', formula: 'devine' });
     expect(num(out.idealWeight)).toBeCloseTo(70.5, 1);
+  });
+});
+
+describe('flames', () => {
+  it('RAM + SITA returns Friends', () => {
+    const out = run('flames', { name1: 'RAM', name2: 'SITA' });
+    expect(String(out.result)).toBe('Friends');
+    expect(num(out.remaining)).toBe(5);
+  });
+
+  it('handles spaces and mixed case', () => {
+    const out = run('flames', { name1: 'Rahul Kumar', name2: 'Priya' });
+    expect(['Friends', 'Lovers', 'Affectionate', 'Marriage', 'Enemies', 'Siblings']).toContain(
+      String(out.result),
+    );
+  });
+});
+
+describe('mulank', () => {
+  it('15 Jun 1995 → Mulank 6, Bhagyank 9', () => {
+    const out = run('mulank', { dateOfBirth: '1995-06-15' });
+    expect(num(out.mulank)).toBe(6);
+    expect(String(out.mulankPlanet)).toContain('Venus');
+    expect(num(out.bhagyank)).toBe(9);
+    expect(String(out.bhagyankPlanet)).toContain('Mars');
+  });
+});
+
+describe('lifePath', () => {
+  it('15 Jun 1995 → Life Path 9', () => {
+    const out = run('lifePath', { dateOfBirth: '1995-06-15' });
+    expect(num(out.lifePathNumber)).toBe(9);
+    expect(String(out.meaning)).toContain('Humanitarian');
+  });
+
+  it('preserves master number 22', () => {
+    const out = run('lifePath', { dateOfBirth: '1993-09-18' });
+    expect(num(out.lifePathNumber)).toBe(22);
+    expect(String(out.isMasterNumber)).toBe('Yes');
+  });
+});
+
+describe('pregnancyWeeks', () => {
+  it('computes weeks and due date from LMP', () => {
+    const out = run('pregnancyWeeks', { method: 'lmp', lmpDate: '2026-01-15', dueDate: '', asOfDate: '2026-08-14' });
+    expect(num(out.gestationalWeeks)).toBe(30);
+    expect(num(out.gestationalDays)).toBe(1);
+    expect(String(out.dueDate)).toBe('2026-10-22');
+    expect(String(out.trimester)).toContain('Third');
+  });
+
+  it('works backwards from a due date', () => {
+    const out = run('pregnancyWeeks', { method: 'dueDate', lmpDate: '', dueDate: '2026-10-22', asOfDate: '2026-08-14' });
+    expect(String(out.lmpDate)).toBe('2026-01-15');
+    expect(num(out.gestationalWeeks)).toBe(30);
   });
 });
 

@@ -54,6 +54,13 @@ export const CATEGORIES: readonly {
     description: 'Percentage calculators and everyday math tools for quick, accurate results.',
     icon: 'percent',
   },
+  {
+    slug: 'fun',
+    label: 'Fun & Personality',
+    tagline: 'FLAMES, numerology & personality tools',
+    description: 'Fun and personality calculators like FLAMES, numerology and life path numbers.',
+    icon: 'auto_awesome',
+  },
 ];
 
 export function categoryBySlug(slug: string) {

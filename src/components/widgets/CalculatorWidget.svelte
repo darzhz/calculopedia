@@ -41,6 +41,8 @@
         return field.default ?? '';
       case 'toggle':
         return field.default ?? false;
+      case 'text':
+        return field.default ?? '';
       default:
         return field.default ?? 0;
     }
@@ -206,6 +208,14 @@
                 <option value={opt.value}>{opt.label}</option>
               {/each}
             </select>
+          {:else if field.type === 'text'}
+            <input
+              type="text"
+              bind:value={values[field.id]}
+              placeholder={field.placeholder}
+              maxlength={field.maxLength}
+              class="m3-input"
+            />
           {:else if field.type === 'date'}
             <input type="date" bind:value={values[field.id]} class="m3-input" />
           {:else if field.type === 'time'}
