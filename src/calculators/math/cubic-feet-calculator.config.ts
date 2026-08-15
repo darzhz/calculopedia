@@ -2,7 +2,7 @@ import type { CalculatorConfig } from '@/lib/schema';
 
 const config: CalculatorConfig = {
   slug: 'cubic-feet-calculator',
-  icon: 'cube',
+  icon: 'square_foot',
   category: 'math',
   title: 'Cubic Feet Calculator',
   shortDescription:
