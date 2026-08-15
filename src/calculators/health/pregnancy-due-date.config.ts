@@ -2,7 +2,7 @@ import type { CalculatorConfig } from '@/lib/schema';
 
 const config: CalculatorConfig = {
   slug: 'pregnancy-due-date-calculator',
-  icon: 'pregnant_woman',
+  icon: 'favorite',
   category: 'health',
   title: 'Pregnancy Due Date Calculator',
   shortDescription:

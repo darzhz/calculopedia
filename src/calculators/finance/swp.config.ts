@@ -2,7 +2,7 @@ import type { CalculatorConfig } from '@/lib/schema';
 
 const config: CalculatorConfig = {
   slug: 'swp-calculator',
-  icon: 'withdraw',
+  icon: 'account_balance',
   category: 'finance',
   title: 'SWP Calculator (Systematic Withdrawal Plan)',
   shortDescription:

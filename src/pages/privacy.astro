@@ -1,0 +1,106 @@
+---
+import BaseLayout from '@/components/layout/BaseLayout.astro';
+import { SITE_NAME } from '@/lib/site';
+---
+
+<BaseLayout
+  title="Privacy Policy"
+  canonicalPath="/privacy/"
+  description={`How ${SITE_NAME} handles your data, cookies and analytics.`}
+>
+  <section class="mx-auto max-w-3xl">
+    <h1 class="text-2xl font-medium tracking-tight text-md-on-surface sm:text-3xl">
+      Privacy Policy
+    </h1>
+    <p class="mt-3 text-sm leading-relaxed text-md-on-surface-variant">
+      Last updated: {new Date().toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' })}
+    </p>
+
+    <div class="mt-8 space-y-10">
+      <section>
+        <h2 class="text-xl font-medium tracking-tight text-md-on-surface">1. Overview</h2>
+        <p class="mt-3 text-sm leading-relaxed text-md-on-surface-variant">
+          {SITE_NAME} runs entirely in your browser. The calculators on this site compute locally on
+          your device — the numbers you enter are not sent to, or stored on, any server. That means
+          your calculations stay private by design.
+        </p>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-medium tracking-tight text-md-on-surface">2. What we collect</h2>
+        <p class="mt-3 text-sm leading-relaxed text-md-on-surface-variant">
+          We do not require an account, and we never ask for personal information such as your name,
+          email address or phone number to use any calculator.
+        </p>
+        <p class="mt-3 text-sm leading-relaxed text-md-on-surface-variant">
+          We do process anonymous, aggregated usage data to understand how the site is used and to
+          improve it. This data does not identify you personally.
+        </p>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-medium tracking-tight text-md-on-surface">3. Analytics</h2>
+        <p class="mt-3 text-sm leading-relaxed text-md-on-surface-variant">
+          We use Google Analytics to measure page views and on-site interactions, such as which
+          calculators are used. Google Analytics uses cookies and collects a pseudonymous identifier
+          for your device, plus technical information such as browser type and approximate location.
+          This helps us understand which content is useful and where to focus improvements.
+        </p>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-medium tracking-tight text-md-on-surface">4. Cookies &amp; consent</h2>
+        <p class="mt-3 text-sm leading-relaxed text-md-on-surface-variant">
+          When you first visit the site, we show a consent banner. Your choice is stored locally in
+          your browser (via <code class="rounded bg-md-surface-container px-1 py-0.5">localStorage</code>)
+          so we remember it on your next visit. You can change or clear this choice at any time from
+          your browser's settings.
+        </p>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-medium tracking-tight text-md-on-surface">5. Advertising</h2>
+        <p class="mt-3 text-sm leading-relaxed text-md-on-surface-variant">
+          Where advertising is shown, ads load only after you accept the consent prompt. Advertising
+          partners may use cookies to show relevant ads and to measure ad performance. No ads load if
+          you decline consent.
+        </p>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-medium tracking-tight text-md-on-surface">6. Third-party links</h2>
+        <p class="mt-3 text-sm leading-relaxed text-md-on-surface-variant">
+          Pages may link to external websites (for example, related tools or informational resources).
+          We are not responsible for the privacy practices of those sites, and we encourage you to
+          review their policies.
+        </p>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-medium tracking-tight text-md-on-surface">7. Your choices</h2>
+        <p class="mt-3 text-sm leading-relaxed text-md-on-surface-variant">
+          You can decline analytics and advertising at any time by refusing or withdrawing consent in
+          the consent prompt, or by clearing cookies and site data in your browser. Where required by
+          law, you also have the right to access, correct or delete any personal data we hold about
+          you.
+        </p>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-medium tracking-tight text-md-on-surface">8. Changes to this policy</h2>
+        <p class="mt-3 text-sm leading-relaxed text-md-on-surface-variant">
+          We may update this policy from time to time. Changes take effect when they are published on
+          this page, and the "last updated" date above reflects the latest revision.
+        </p>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-medium tracking-tight text-md-on-surface">9. Contact</h2>
+        <p class="mt-3 text-sm leading-relaxed text-md-on-surface-variant">
+          If you have questions about this policy, you can reach us at the contact details listed on
+          the site.
+        </p>
+      </section>
+    </div>
+  </section>
+</BaseLayout>

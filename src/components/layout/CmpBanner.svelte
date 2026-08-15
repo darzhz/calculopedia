@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
 
-  const KEY = 'calc-encyclopedia-consent';
+  const KEY = 'calculopedia-consent';
   let visible = $state(false);
 
   function applyConsent(granted: boolean) {
@@ -50,7 +50,8 @@
     >
       <p class="flex-1 text-sm text-md-on-surface-variant">
         We use cookies to personalize content and measure usage. Advertisers may show ads relevant
-        to you. You can change your choice anytime.
+        to you. You can change your choice anytime. Read our
+        <a href="/privacy/" class="text-md-primary hover:text-md-primary/80">Privacy Policy</a>.
       </p>
       <div class="flex shrink-0 gap-2">
         <button onclick={deny} class="btn btn-outlined"> Decline </button>

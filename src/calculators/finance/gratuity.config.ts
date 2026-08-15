@@ -2,7 +2,7 @@ import type { CalculatorConfig } from '@/lib/schema';
 
 const config: CalculatorConfig = {
   slug: 'gratuity-calculator',
-  icon: 'card_giftcard',
+  icon: 'redeem',
   category: 'finance',
   title: 'Gratuity Calculator (India)',
   shortDescription:
