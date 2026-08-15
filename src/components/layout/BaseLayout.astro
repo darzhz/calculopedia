@@ -4,7 +4,7 @@ import Header from './Header.astro';
 import Footer from './Footer.astro';
 import CmpBanner from './CmpBanner.svelte';
 import AdLoader from './AdLoader.svelte';
-import { SITE_NAME, SITE_TAGLINE, GA4_ID } from '@/lib/site';
+import { SITE_NAME, SITE_TAGLINE, GA4_ID, AD_CLIENT_ID } from '@/lib/site';
 import { absoluteUrl } from '@/lib/seo';
 
 interface Props {
@@ -68,6 +68,16 @@ const fullTitle = title === SITE_NAME ? title : `${title} | ${SITE_NAME}`;
         ${GA4_ID ? `gtag('config', '${GA4_ID}');` : ''}
       `}
     />
+    {
+      AD_CLIENT_ID && (
+        <script
+          is:inline
+          async
+          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${AD_CLIENT_ID}`}
+          crossorigin="anonymous"
+        />
+      )
+    }
     <slot name="schema" />
   </head>
   <body class="flex min-h-screen flex-col bg-md-surface text-md-on-surface">

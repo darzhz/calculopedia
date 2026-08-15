@@ -1,18 +1,8 @@
 <script lang="ts">
   import { onMount } from 'svelte';
 
-  const KEY = 'calculopedia-consent';
+  const KEY = 'calculopedia-notice-dismissed';
   let visible = $state(false);
-
-  function applyConsent(granted: boolean) {
-    document.body.dataset.consent = granted ? 'granted' : 'denied';
-    try {
-      localStorage.setItem(KEY, granted ? 'granted' : 'denied');
-    } catch {
-      /* storage unavailable */
-    }
-    window.dispatchEvent(new CustomEvent('cmp-consent', { detail: { granted } }));
-  }
 
   onMount(() => {
     let stored: string | null = null;
@@ -21,20 +11,15 @@
     } catch {
       /* storage unavailable */
     }
-    if (stored) {
-      applyConsent(stored === 'granted');
-    } else {
-      visible = true;
-    }
+    if (!stored) visible = true;
   });
 
-  function accept() {
-    applyConsent(true);
-    visible = false;
-  }
-
-  function deny() {
-    applyConsent(false);
+  function dismiss() {
+    try {
+      localStorage.setItem(KEY, '1');
+    } catch {
+      /* storage unavailable */
+    }
     visible = false;
   }
 </script>
@@ -49,13 +34,12 @@
       class="mx-auto flex w-full max-w-3xl flex-col items-start gap-3 sm:flex-row sm:items-center"
     >
       <p class="flex-1 text-sm text-md-on-surface-variant">
-        We use cookies to personalize content and measure usage. Advertisers may show ads relevant
-        to you. You can change your choice anytime. Read our
+        This site uses Google Analytics to measure usage and Google AdSense to display
+        advertisements. Read our
         <a href="/privacy/" class="text-md-primary hover:text-md-primary/80">Privacy Policy</a>.
       </p>
       <div class="flex shrink-0 gap-2">
-        <button onclick={deny} class="btn btn-outlined"> Decline </button>
-        <button onclick={accept} class="btn btn-filled"> Accept </button>
+        <button onclick={dismiss} class="btn btn-filled"> Got it </button>
       </div>
     </div>
   </div>
