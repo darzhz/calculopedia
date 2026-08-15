@@ -15,7 +15,7 @@ interface Props {
 const { variant = 'hero' } = Astro.props;
 ---
 
-<div class="pointer-events-none absolute inset-0 -z-10 overflow-hidden" aria-hidden="true">
+<div class="pointer-events-none absolute inset-0 -z-10 overflow-hidden md:rounded-[48px]" aria-hidden="true">
   {
     variant === 'hero' ? (
       <>
