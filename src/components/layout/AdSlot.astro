@@ -1,21 +1,37 @@
 ---
-import { AD_SLOT_SIZES } from '@/lib/site';
+import { AD_CLIENT_ID, AD_UNITS } from '@/lib/site';
 
 interface Props {
+  /** Unique placement key, used for the DOM id (e.g. "home-leaderboard"). */
   id: string;
-  size?: keyof typeof AD_SLOT_SIZES;
+  /** AdSense ad unit type defined in AD_UNITS. */
+  unit?: keyof typeof AD_UNITS;
 }
 
-const { id, size = 'leaderboard' } = Astro.props;
-const minHeight = AD_SLOT_SIZES[size] ?? AD_SLOT_SIZES.leaderboard;
+const { id, unit = 'leaderboard' } = Astro.props;
+const adUnit = AD_UNITS[unit] ?? AD_UNITS.leaderboard;
+const enabled = Boolean(AD_CLIENT_ID && adUnit.slotId);
+const fluid = adUnit.format === 'fluid';
 ---
 
-<div
-  class:list={['ad-slot', minHeight]}
-  id={`ad-${id}`}
-  data-ad-slot={id}
-  aria-label="Advertisement placeholder"
-  data-consent-required
->
-  <!-- Ad network injects here after consent. Reserved height prevents CLS. -->
-</div>
+{
+  enabled && (
+    <div
+      class:list={['ad-slot', adUnit.minHeight]}
+      id={`ad-${id}`}
+      aria-label="Advertisement"
+      data-consent-required
+    >
+      <!-- AdSense fills this after consent. Reserved height prevents CLS. -->
+      <ins
+        class="adsbygoogle"
+        style={`display:block${fluid ? '; text-align:center' : ''}`}
+        data-ad-client={AD_CLIENT_ID}
+        data-ad-slot={adUnit.slotId}
+        data-ad-format={adUnit.format}
+        data-ad-layout={adUnit.layout}
+        data-full-width-responsive={adUnit.format === 'auto' ? 'true' : undefined}
+      />
+    </div>
+  )
+}

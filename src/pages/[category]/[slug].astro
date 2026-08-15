@@ -79,7 +79,7 @@ if (config.faq?.length) schemaData.push(faqSchema(config.faq));
       </div>
     </section>
 
-    <AdSlot id={`${config.slug}-leaderboard`} size="leaderboard" />
+    <AdSlot id={`${config.slug}-leaderboard`} unit="leaderboard" />
 
     <section aria-label="Calculator">
       <CalculatorWidget config={config} client:load />
@@ -93,7 +93,7 @@ if (config.faq?.length) schemaData.push(faqSchema(config.faq));
       </details>
     </section>
 
-    <AdSlot id={`${config.slug}-mid-content`} size="rectangle" />
+    <AdSlot id={`${config.slug}-mid-content`} unit="rectangle" />
 
     <section class="card p-6 sm:p-7" aria-label="Worked example">
       <h2 class="flex items-center gap-2 text-xl font-medium tracking-tight text-md-on-surface">

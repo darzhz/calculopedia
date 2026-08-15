@@ -1,8 +1,10 @@
 ---
-import { getCollection, render } from 'astro:content';
+import { getCollection } from 'astro:content';
 import BaseLayout from '@/components/layout/BaseLayout.astro';
 import Breadcrumbs from '@/components/layout/Breadcrumbs.astro';
+import AdSlot from '@/components/layout/AdSlot.astro';
 import { breadcrumbSchema, articleSchema } from '@/lib/seo';
+import { renderMarkdown, splitMarkdown } from '@/lib/markdown';
 
 export async function getStaticPaths() {
   const posts = await getCollection('blog');
@@ -13,7 +15,7 @@ const { slug } = Astro.params;
 const entry = (await getCollection('blog')).find((p) => p.id === slug);
 if (!entry) return Astro.redirect('/blog/');
 
-const { Content } = await render(entry);
+const { first, second } = splitMarkdown(entry.body ?? '', 1000);
 const path = `/blog/${entry.id}/`;
 const breadcrumbs = [
   { name: 'Home', url: '/' },
@@ -63,7 +65,13 @@ const breadcrumbs = [
       </p>
     </header>
     <div class="prose-calc">
-      <Content />
+      <Fragment set:html={renderMarkdown(first)} />
+      {second && (
+        <div class="my-8">
+          <AdSlot id={`blog-${entry.id}-in-article`} unit="inArticle" />
+        </div>
+      )}
+      {second && <Fragment set:html={renderMarkdown(second)} />}
     </div>
   </article>
 </BaseLayout>

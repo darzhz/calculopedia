@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '@/components/layout/BaseLayout.astro';
 import Breadcrumbs from '@/components/layout/Breadcrumbs.astro';
 import AmbientShapes from '@/components/layout/AmbientShapes.astro';
+import AdSlot from '@/components/layout/AdSlot.astro';
 
 const terms = (await getCollection('glossary')).sort((a, b) =>
   a.data.term.localeCompare(b.data.term),
@@ -46,5 +47,9 @@ const breadcrumbs = [
         </a>
       ))
     }
+  </div>
+
+  <div class="mt-10 md:mt-12">
+    <AdSlot id="glossary-index-multiplex" unit="multiplex" />
   </div>
 </BaseLayout>

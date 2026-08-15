@@ -78,9 +78,43 @@ export const TOP_CALCULATORS = [
 /** Google Analytics 4 Measurement ID. Leave empty to disable GA4. */
 export const GA4_ID = 'G-N394NHVP77';
 
-/** Reserved height classes for ad slots (prevent layout shift). */
-export const AD_SLOT_SIZES: Record<string, string> = {
-  leaderboard: 'min-h-[90px] md:min-h-[120px]',
-  rectangle: 'min-h-[250px]',
-  mobile: 'min-h-[90px]',
+/**
+ * Google AdSense Publisher ID (ca-pub-XXXXXXXXXXXX).
+ * Found in the AdSense dashboard (Settings > Account information).
+ * Leave empty to disable ads entirely.
+ */
+export const AD_CLIENT_ID = 'ca-pub-6824360436432405';
+
+/**
+ * AdSense ad units, created once in the dashboard (Ads > By ad unit > New ad
+ * unit). Each unit gives a numeric `data-ad-slot` ID. Reusing one unit per
+ * position across pages is fine. Key = AdSlot `unit` prop.
+ *
+ * - `display` units: format "auto" (leaderboard, rectangle)
+ * - In-article unit: format "fluid" with layout "in-article", flows between
+ *   paragraphs inside blog/glossary posts
+ * - Multiplex unit: format "autorelaxed", shows related-content previews
+ */
+export const AD_UNITS: Record<string, { slotId: string; format: string; layout?: string; minHeight: string }> = {
+  leaderboard: {
+    slotId: '7834694303',
+    format: 'auto',
+    minHeight: 'min-h-[90px] md:min-h-[120px]',
+  },
+  rectangle: {
+    slotId: '7736239924',
+    format: 'auto',
+    minHeight: 'min-h-[250px]',
+  },
+  inArticle: {
+    slotId: '6147826081',
+    format: 'fluid',
+    layout: 'in-article',
+    minHeight: 'min-h-[250px]',
+  },
+  multiplex: {
+    slotId: '1302693518',
+    format: 'autorelaxed',
+    minHeight: 'min-h-[280px]',
+  },
 };

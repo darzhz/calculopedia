@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '@/components/layout/BaseLayout.astro';
 import Breadcrumbs from '@/components/layout/Breadcrumbs.astro';
 import AmbientShapes from '@/components/layout/AmbientShapes.astro';
+import AdSlot from '@/components/layout/AdSlot.astro';
 
 const posts = (await getCollection('blog')).sort((a, b) =>
   b.data.datePublished.localeCompare(a.data.datePublished),
@@ -60,5 +61,9 @@ const breadcrumbs = [
         </article>
       ))
     }
+  </div>
+
+  <div class="mt-10 md:mt-12">
+    <AdSlot id="blog-index-multiplex" unit="multiplex" />
   </div>
 </BaseLayout>
