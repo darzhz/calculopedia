@@ -3,7 +3,7 @@
  */
 
 /** Production URL (no trailing slash). Used for canonical URLs and sitemap. */
-export const SITE_URL = 'https://calc-encyclopedia.example.com';
+export const SITE_URL = 'https://calculopedia.darzh.xyz';
 
 export const SITE_NAME = 'Calculopedia';
 
@@ -76,7 +76,7 @@ export const TOP_CALCULATORS = [
 ];
 
 /** Google Analytics 4 Measurement ID. Leave empty to disable GA4. */
-export const GA4_ID = '';
+export const GA4_ID = 'G-N394NHVP77';
 
 /** Reserved height classes for ad slots (prevent layout shift). */
 export const AD_SLOT_SIZES: Record<string, string> = {
