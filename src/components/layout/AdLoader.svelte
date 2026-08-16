@@ -4,19 +4,20 @@
   const RETRY_MS = 100;
   const MAX_TRIES = 10;
 
+  function unfilledSlots(): HTMLElement[] {
+    return [...document.querySelectorAll<HTMLElement>('ins.adsbygoogle')].filter(
+      (ins) => !ins.hasAttribute('data-adsbygoogle-status')
+    );
+  }
+
   function slotsReady(): boolean {
-    const slots = document.querySelectorAll<HTMLElement>('ins.adsbygoogle');
-    if (slots.length === 0) return false;
-    for (const ins of slots) {
-      if (ins.getBoundingClientRect().width === 0) return false;
-    }
-    return true;
+    return unfilledSlots().every((ins) => ins.getBoundingClientRect().width > 0);
   }
 
   function pushAds() {
     const w = window as unknown as { adsbygoogle?: unknown[] };
     if (!w.adsbygoogle) return;
-    const count = document.querySelectorAll('ins.adsbygoogle').length;
+    const count = unfilledSlots().length;
     for (let i = 0; i < count; i++) {
       w.adsbygoogle!.push({});
     }
