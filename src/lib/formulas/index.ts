@@ -60,6 +60,33 @@ import { compute as sgpaToPercentage } from './sgpaToPercentage';
 import { compute as dipoleMoment } from './dipoleMoment';
 import { compute as equivalentWeight } from './equivalentWeight';
 import { compute as edd } from './edd';
+import { compute as tdee } from './tdee';
+import { compute as calorieDeficit } from './calorieDeficit';
+import { compute as maxHeartRate } from './maxHeartRate';
+import { compute as zone2HeartRate } from './zone2HeartRate';
+import { compute as dogYears } from './dogYears';
+import { compute as heloc } from './heloc';
+import { compute as apr } from './apr';
+import { compute as roi } from './roi';
+import { compute as inflation } from './inflation';
+import { compute as ringSize } from './ringSize';
+import { compute as golf } from './golf';
+import { compute as magi } from './magi';
+import { compute as realGdp } from './realGdp';
+import { compute as breakEven } from './breakEven';
+import { compute as costOfSales } from './costOfSales';
+import { compute as ltv } from './ltv';
+import { compute as socialSecurity } from './socialSecurity';
+import { compute as homeEquity } from './homeEquity';
+import { compute as creditCardInterest } from './creditCardInterest';
+import { compute as biologicalAge } from './biologicalAge';
+import { compute as vo2max } from './vo2max';
+import { compute as ovulation } from './ovulation';
+import { compute as macros } from './macros';
+import { compute as passivePerception } from './passivePerception';
+import { compute as arcana } from './arcana';
+import { compute as roofPitch } from './roofPitch';
+import { compute as elevation } from './elevation';
 import {
   percentOf,
   percentChange,
@@ -134,6 +161,33 @@ export const formulaRegistry: Record<string, FormulaFn> = {
   dipoleMoment,
   equivalentWeight,
   edd,
+  tdee,
+  calorieDeficit,
+  maxHeartRate,
+  zone2HeartRate,
+  dogYears,
+  heloc,
+  apr,
+  roi,
+  inflation,
+  ringSize,
+  golf,
+  magi,
+  realGdp,
+  breakEven,
+  costOfSales,
+  ltv,
+  socialSecurity,
+  homeEquity,
+  creditCardInterest,
+  biologicalAge,
+  vo2max,
+  ovulation,
+  macros,
+  passivePerception,
+  arcana,
+  roofPitch,
+  elevation,
   percentOf,
   percentChange,
   percentIncrease,

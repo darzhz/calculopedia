@@ -665,3 +665,276 @@ describe('percentage family', () => {
     expect(num(out.marginPercent)).toBeCloseTo(16.7, 1);
   });
 });
+
+describe('tdee', () => {
+  it('30yo male 175cm 75kg moderate → ~2633 kcal', () => {
+    const out = run('tdee', { age: 30, gender: 'male', heightCm: 175, weight: 75, activity: 'moderate' });
+    expect(num(out.bmr)).toBeCloseTo(1699, 0);
+    expect(num(out.tdee)).toBeCloseTo(2633, 0);
+    expect(num(out.lossTarget)).toBeCloseTo(2133, 0);
+    expect(num(out.gainTarget)).toBeCloseTo(3133, 0);
+  });
+});
+
+describe('calorieDeficit', () => {
+  it('500 kcal deficit → ~0.45 kg/week, ~11 weeks for 5kg', () => {
+    const out = run('calorieDeficit', {
+      age: 30, gender: 'male', heightCm: 175, weight: 75, activity: 'moderate', deficit: 500,
+    });
+    expect(num(out.targetCalories)).toBeCloseTo(2133, 0);
+    expect(num(out.weeklyLossKg)).toBeCloseTo(0.45, 1);
+    expect(num(out.weeksToLose5Kg)).toBeCloseTo(11, 0);
+  });
+
+  it('never recommends below 1200 kcal', () => {
+    const out = run('calorieDeficit', {
+      age: 60, gender: 'female', heightCm: 150, weight: 40, activity: 'sedentary', deficit: 1000,
+    });
+    expect(num(out.targetCalories)).toBeGreaterThanOrEqual(1200);
+  });
+});
+
+describe('maxHeartRate', () => {
+  it('30yo: 220-age = 190, Tanaka = 187', () => {
+    const out = run('maxHeartRate', { age: 30, method: '220' });
+    expect(num(out.maxHr)).toBe(190);
+    expect(num(out.zone2Low)).toBe(114);
+    expect(num(out.zone2High)).toBe(133);
+    const tanaka = run('maxHeartRate', { age: 30, method: 'tanaka' });
+    expect(num(tanaka.maxHr)).toBe(187);
+    expect(Array.isArray(out.zoneTable)).toBe(true);
+  });
+});
+
+describe('zone2HeartRate', () => {
+  it('35yo maxHR method → 111–130', () => {
+    const out = run('zone2HeartRate', { age: 35, method: 'maxHr' });
+    expect(num(out.zone2Low)).toBe(111);
+    expect(num(out.zone2High)).toBe(130);
+  });
+
+  it('35yo Karvonen with resting 60 → 135–147', () => {
+    const out = run('zone2HeartRate', { age: 35, method: 'karvonen', restingHr: 60 });
+    expect(num(out.zone2Low)).toBe(135);
+    expect(num(out.zone2High)).toBe(148);
+  });
+});
+
+describe('dogYears', () => {
+  it('5yo medium dog → 39 human years', () => {
+    const out = run('dogYears', { age: 5, breedSize: 'medium' });
+    expect(num(out.humanYears)).toBe(39);
+  });
+
+  it('1yo dog → 15, 2yo → 24', () => {
+    expect(num(run('dogYears', { age: 1, breedSize: 'small' }).humanYears)).toBe(15);
+    expect(num(run('dogYears', { age: 2, breedSize: 'small' }).humanYears)).toBe(24);
+  });
+
+  it('large breeds age faster: 5yo large → 42', () => {
+    const out = run('dogYears', { age: 5, breedSize: 'large' });
+    expect(num(out.humanYears)).toBe(42);
+  });
+});
+
+describe('heloc', () => {
+  it('50k drawn at 8.5% interest-only → ~354/month', () => {
+    const out = run('heloc', { drawAmount: 50000, annualRate: 8.5, years: 10, interestOnly: true });
+    expect(num(out.monthlyPayment)).toBeCloseTo(354, 0);
+  });
+
+  it('amortized over 10 years → ~620/month', () => {
+    const out = run('heloc', { drawAmount: 50000, annualRate: 8.5, years: 10, interestOnly: false });
+    expect(num(out.monthlyPayment)).toBeCloseTo(620, 0);
+    expect(num(out.totalInterest)).toBeGreaterThan(0);
+  });
+});
+
+describe('apr', () => {
+  it('8% + 2k fees on 100k over 5y → APR ≈ 8.79%', () => {
+    const out = run('apr', { loanAmount: 100000, annualRate: 8, fees: 2000, years: 5, paymentsPerYear: 12 });
+    expect(num(out.apr)).toBeCloseTo(8.79, 1);
+  });
+});
+
+describe('roi', () => {
+  it('100k → 150k over 5y → 50% ROI, ~8.4% annualized', () => {
+    const out = run('roi', { cost: 100000, finalValue: 150000, years: 5 });
+    expect(num(out.roi)).toBe(50);
+    expect(num(out.profit)).toBe(50000);
+    expect(num(out.annualizedRoi)).toBeCloseTo(8.4, 1);
+  });
+});
+
+describe('inflation', () => {
+  it('100k at 6% for 6 years → ~141852', () => {
+    const out = run('inflation', { amount: 100000, annualRate: 6, startYear: 2020, endYear: 2026 });
+    expect(num(out.futureValue)).toBeCloseTo(141852, 0);
+    expect(num(out.multiplier)).toBeCloseTo(1.42, 2);
+  });
+});
+
+describe('ringSize', () => {
+  it('55mm circumference → US ~7.2', () => {
+    const out = run('ringSize', { circumference: 55, diameter: 0, unit: 'us' });
+    expect(num(out.usSize)).toBeCloseTo(7.2, 1);
+  });
+
+  it('17mm diameter → circumference ~53.4, US ~6.6', () => {
+    const out = run('ringSize', { circumference: 0, diameter: 17, unit: 'us' });
+    expect(num(out.circumference)).toBeCloseTo(53.4, 1);
+    expect(num(out.usSize)).toBeCloseTo(6.6, 1);
+  });
+});
+
+describe('golf', () => {
+  it('90 on rating 71.5 slope 113 → differential 18.5', () => {
+    const out = run('golf', { score: 90, courseRating: 71.5, slope: 113 });
+    expect(num(out.differential)).toBeCloseTo(18.5, 1);
+  });
+});
+
+describe('magi', () => {
+  it('AGI 1200000 + 50000 add-backs = 1250000', () => {
+    const out = run('magi', { agi: 1200000, addBacks: 50000 });
+    expect(num(out.magi)).toBe(1250000);
+  });
+});
+
+describe('realGdp', () => {
+  it('nominal 240 deflator 120 → real 200', () => {
+    const out = run('realGdp', { nominalGdp: 240, deflator: 120 });
+    expect(num(out.realGdp)).toBeCloseTo(200, 0);
+  });
+});
+
+describe('breakEven', () => {
+  it('fixed 500000, price 250, var 150 → 5000 units, 1250000 revenue', () => {
+    const out = run('breakEven', { fixedCosts: 500000, pricePerUnit: 250, variableCostPerUnit: 150 });
+    expect(num(out.breakEvenUnits)).toBe(5000);
+    expect(num(out.breakEvenRevenue)).toBe(1250000);
+    expect(num(out.contributionMargin)).toBe(100);
+  });
+});
+
+describe('costOfSales', () => {
+  it('opening 200000 + purchases 800000 − closing 150000 = 850000', () => {
+    const out = run('costOfSales', { openingInventory: 200000, purchases: 800000, closingInventory: 150000 });
+    expect(num(out.cogs)).toBe(850000);
+  });
+});
+
+describe('ltv', () => {
+  it('8L loan on 10L value → 80% LTV', () => {
+    const out = run('ltv', { loanAmount: 8000000, propertyValue: 10000000 });
+    expect(num(out.ltv)).toBe(80);
+    expect(num(out.maxLoan80)).toBe(8000000);
+  });
+});
+
+describe('socialSecurity', () => {
+  it('AIME 5000 → PIA ≈ 2311/month', () => {
+    const out = run('socialSecurity', { aime: 5000 });
+    expect(num(out.piaMonthly)).toBeCloseTo(2311, 0);
+  });
+});
+
+describe('homeEquity', () => {
+  it('1.2cr value − 50L balance = 70L equity (58.3%)', () => {
+    const out = run('homeEquity', { homeValue: 12000000, mortgageBalance: 5000000 });
+    expect(num(out.equity)).toBe(7000000);
+    expect(num(out.equityPercent)).toBeCloseTo(58.3, 1);
+  });
+});
+
+describe('creditCardInterest', () => {
+  it('50k at 36% → 1500/month interest; 5k payment clears debt', () => {
+    const out = run('creditCardInterest', { balance: 50000, annualRate: 36, monthlyPayment: 5000 });
+    expect(num(out.monthlyInterest)).toBeCloseTo(1500, 0);
+    expect(String(out.payoffPossible)).toBe('Yes');
+    expect(num(out.payoffMonths)).toBeGreaterThan(0);
+    expect(num(out.totalInterest)).toBeGreaterThan(0);
+  });
+
+  it('payment below interest → cannot pay off', () => {
+    const out = run('creditCardInterest', { balance: 50000, annualRate: 36, monthlyPayment: 1000 });
+    expect(String(out.payoffPossible)).toContain('No');
+  });
+});
+
+describe('biologicalAge', () => {
+  it('healthy 40yo lifestyle → ~35', () => {
+    const out = run('biologicalAge', {
+      age: 40, diet: 'good', exercise: 'regular', sleep: 'optimal', smoking: 'no', alcohol: 'social', stress: 'low',
+    });
+    expect(num(out.adjustment)).toBe(-5);
+    expect(num(out.biologicalAge)).toBe(35);
+  });
+});
+
+describe('vo2max', () => {
+  it('35yo resting 65 → ~43.6', () => {
+    const out = run('vo2max', { age: 35, gender: 'male', restingHr: 65 });
+    expect(num(out.vo2max)).toBeCloseTo(43.5, 1);
+  });
+});
+
+describe('ovulation', () => {
+  it('28-day cycle from 2026-08-01 → ovulation 2026-08-15', () => {
+    const out = run('ovulation', { periodStart: '2026-08-01', cycleLength: 28, lutealPhase: 14 });
+    expect(out.ovulationDate).toBe('2026-08-15');
+    expect(out.fertileStart).toBe('2026-08-10');
+    expect(out.fertileEnd).toBe('2026-08-16');
+    expect(out.nextPeriodDate).toBe('2026-08-29');
+  });
+});
+
+describe('macros', () => {
+  it('maintaining 75kg male → protein 120g', () => {
+    const out = run('macros', {
+      age: 30, gender: 'male', heightCm: 175, weight: 75, activity: 'moderate', goal: 'maintain', proteinSplit: 'moderate',
+    });
+    expect(num(out.proteinG)).toBe(120);
+    expect(num(out.targetCalories)).toBeCloseTo(2633, 0);
+  });
+});
+
+describe('passivePerception', () => {
+  it('WIS+3 prof+3 → 16', () => {
+    const out = run('passivePerception', { wisdomMod: 3, proficiency: 3, hasProficiency: true, hasExpertise: false });
+    expect(num(out.passivePerception)).toBe(16);
+  });
+
+  it('expertise doubles proficiency → 19', () => {
+    const out = run('passivePerception', { wisdomMod: 3, proficiency: 3, hasProficiency: true, hasExpertise: true });
+    expect(num(out.passivePerception)).toBe(19);
+  });
+});
+
+describe('arcana', () => {
+  it('12 + INT+4 + prof+4 = 20', () => {
+    const out = run('arcana', { intelligenceMod: 4, proficiency: 4, hasProficiency: true, hasExpertise: false, roll: 12 });
+    expect(num(out.total)).toBe(20);
+  });
+});
+
+describe('roofPitch', () => {
+  it('6-in-12 → 26.6° and 50% grade', () => {
+    const out = run('roofPitch', { riseInches: 6, runInches: 12 });
+    expect(String(out.pitchRatio)).toBe('6-in-12');
+    expect(num(out.degrees)).toBeCloseTo(26.6, 1);
+    expect(num(out.percentGrade)).toBeCloseTo(50, 1);
+  });
+});
+
+describe('elevation', () => {
+  it('100m at 10° → ~17.6m climb', () => {
+    const out = run('elevation', { distance: 100, slope: 10, method: 'degrees' });
+    expect(num(out.elevationChange)).toBeCloseTo(17.6, 1);
+  });
+
+  it('100m at 18% grade → 18m climb', () => {
+    const out = run('elevation', { distance: 100, slope: 18, method: 'percent' });
+    expect(num(out.elevationChange)).toBeCloseTo(18, 1);
+  });
+});

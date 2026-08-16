@@ -2,7 +2,7 @@ import type { CalculatorConfig } from '@/lib/schema';
 
 const config: CalculatorConfig = {
   slug: 'ratio-calculator',
-  icon: 'ratio',
+  icon: 'compare_arrows',
   category: 'math',
   title: 'Ratio Calculator',
   shortDescription:
