@@ -24,7 +24,7 @@ const fluid = adUnit.format === 'fluid';
       <!-- AdSense fills this after consent. Reserved height prevents CLS. -->
       <ins
         class="adsbygoogle"
-        style={`display:block${fluid ? '; text-align:center' : ''}`}
+        style={`display:block; width:100%${fluid ? '; text-align:center' : ''}`}
         data-ad-client={AD_CLIENT_ID}
         data-ad-slot={adUnit.slotId}
         data-ad-format={adUnit.format}

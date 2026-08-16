@@ -216,11 +216,11 @@
 
   /* --- Ad slots (reserved height, prevents CLS) --- */
   .ad-slot {
-    @apply flex w-full items-center justify-center bg-md-surface-container-low;
+    @apply block w-full bg-md-surface-container-low;
   }
   .ad-slot::before {
     content: 'Advertisement';
-    @apply text-xs text-md-on-surface-variant/60;
+    @apply block w-full text-center text-xs text-md-on-surface-variant/60;
   }
 }
 
